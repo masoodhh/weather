@@ -1,6 +1,13 @@
 # weather
 
-weather project by clean Architecture and bloc 14031005
+weather project by clean Architecture and bloc
+
+## Download
+[Download APK](./release/weather.apk)
+
+## Screenshots
+![Screenshot 1](./release/screenshots/Screenshot_1.png)
+![Screenshot 2](./release/screenshots/Screenshot_2.png)
 
 ## Getting Started
 

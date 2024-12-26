@@ -4,11 +4,11 @@ part of 'bookmark_bloc.dart';
 abstract class BookmarkEvent {}
 
 class GetAllCityEvent extends BookmarkEvent {}
-
+/*
 class GetCityByNameEvent extends BookmarkEvent {
   final String cityName;
   GetCityByNameEvent(this.cityName);
-}
+}*/
 
 class SaveCwEvent extends BookmarkEvent {
   final String name;

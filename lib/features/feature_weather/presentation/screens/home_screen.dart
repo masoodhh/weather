@@ -60,110 +60,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: height * 0.02),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TypeAheadField(
-                    controller: textEditingController,
-                    onSelected: (Data model) {
-                      textEditingController.text = model.name!;
-                      BlocProvider.of<HomeBloc>(context).add(LoadCwEvent(model.name!));
-                    },
-                    builder: (context, controller, focusNode) {
-                      return TextField(
-                        controller: controller,
-                        focusNode: focusNode,
-                        onSubmitted: (String prefix) {
-                          controller.text = prefix;
-                          BlocProvider.of<HomeBloc>(context).add(LoadCwEvent(prefix));
-                        },
-                        // controller: textEditingController,
-                        style: DefaultTextStyle
-                            .of(context)
-                            .style
-                            .copyWith(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                          hintText: "Enter a City...",
-                          hintStyle: TextStyle(color: Colors.white),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                        ),
-                      );
-                    },
-
-                    suggestionsCallback: (String prefix) {
-                      Logger logger=Logger();
-                      logger.i(prefix);
-                      return getSuggestionCityUseCase(prefix);
-                    },
-                    itemBuilder: (context, Data model) {
-                      return ListTile(
-                        leading: const Icon(Icons.location_on),
-                        title: Text(model.name!),
-                        subtitle: Text("${model.region!}, ${model.country}"),
-                      );
-                    },
-                    /*onSuggestionSelected: (Data model) {
-                      textEditingController.text = model.name!;
-                      BlocProvider.of<HomeBloc>(context).add(LoadCwEvent(model.name!));
-                    },*/
-                  ),
-                ),
-                const SizedBox(width: 10),
-                BlocBuilder<HomeBloc, HomeState>(
-                  buildWhen: (previous, current) {
-                    if (previous.cwStatus == current.cwStatus) {
-                      return false;
-                    } else {
-                      return true;
-                    }
-                  },
-                  builder: (context, state) {
-                    //show loading state for cw
-                    if (state.cwStatus is CwLoading) {
-                      return const CircularProgressIndicator();
-                    }
-
-                    //show error state for cw
-                    if (state.cwStatus is CwError) {
-                      return IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.error,
-                          color: Colors.white,
-                          size: 35,
-                        ),
-                      );
-                    }
-                    //show loaded state for cw
-                    if (state.cwStatus is CwCompleted) {
-                      final CwCompleted cwComplete = state.cwStatus as CwCompleted;
-                      BlocProvider.of<BookmarkBloc>(context).add(
-                        GetCityByNameEvent(
-                          cwComplete.currentCityEntity.name!,
-                        ),
-                      );
-                      return BookMarkIcon(
-                        name: cwComplete.currentCityEntity.name!,
-                      );
-                    }
-                    return Container();
-                  },
-                ),
-              ],
-            ),
-          ),
 
           //main ui
           BlocBuilder<HomeBloc, HomeState>(
@@ -211,126 +107,112 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         child: SizedBox(
                           width: width,
                           height: 400,
-                          child: PageView.builder(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            allowImplicitScrolling: true,
-                            controller: _pageController,
-                            itemCount: 2,
-                            itemBuilder: (context, position) {
-                              if (position == 0) {
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 20),
-                                      child: Text(
-                                        currentCityEntity.name!,
-                                        style: const TextStyle(
-                                          fontSize: 30,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 20),
-                                      child: Text(
-                                        currentCityEntity.weather![0].description!,
-                                        style: const TextStyle(
-                                          fontSize: 20,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Text(
+                                  currentCityEntity.name!,
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Text(
+                                  currentCityEntity.weather![0].description!,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: AppBackground.setIconForMain(
+                                  currentCityEntity.weather![0].description!,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Text(
+                                  "${currentCityEntity.main!.temp!.round()}\u00B0",
+                                  style: const TextStyle(
+                                    fontSize: 50,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+
+                                  /// max temp
+                                  Column(
+                                    children: [
+                                      const Text(
+                                        "max",
+                                        style: TextStyle(
+                                          fontSize: 16,
                                           color: Colors.grey,
                                         ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 20),
-                                      child: AppBackground.setIconForMain(
-                                        currentCityEntity.weather![0].description!,
+                                      const SizedBox(
+                                        height: 10,
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 20),
-                                      child: Text(
-                                        "${currentCityEntity.main!.temp!.round()}\u00B0",
+                                      Text(
+                                        "${currentCityEntity.main!.tempMax!.round()}\u00B0",
                                         style: const TextStyle(
-                                          fontSize: 50,
+                                          fontSize: 16,
                                           color: Colors.white,
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
+                                    ],
+                                  ),
 
-                                        /// max temp
-                                        Column(
-                                          children: [
-                                            const Text(
-                                              "max",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(
-                                              "${currentCityEntity.main!.tempMax!.round()}\u00B0",
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-
-                                        /// divider
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 10.0,
-                                            right: 10,
-                                          ),
-                                          child: Container(
-                                            color: Colors.grey,
-                                            width: 2,
-                                            height: 40,
-                                          ),
-                                        ),
-
-                                        /// min temp
-                                        Column(
-                                          children: [
-                                            const Text(
-                                              "min",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(
-                                              "${currentCityEntity.main!.tempMin!.round()}\u00B0",
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                  /// divider
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 10.0,
+                                      right: 10,
                                     ),
-                                  ],
-                                );
-                              } else {
-                                return Container(
-                                  color: Colors.amber,
-                                );
-                              }
-                            },
+                                    child: Container(
+                                      color: Colors.grey,
+                                      width: 2,
+                                      height: 40,
+                                    ),
+                                  ),
+
+                                  /// min temp
+                                  Column(
+                                    children: [
+                                      const Text(
+                                        "min",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        "${currentCityEntity.main!.tempMin!.round()}\u00B0",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -340,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                       ),
 
                       /// pageView Indicator
-                      Center(
+/*                      Center(
                         child: SmoothPageIndicator(
                           controller: _pageController,
                           // PageController
@@ -359,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                                 curve: Curves.bounceOut,
                               ),
                         ),
-                      ),
+                      ),*/
 
                       /// divider
                       Padding(

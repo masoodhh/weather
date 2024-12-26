@@ -16,8 +16,8 @@ import 'package:get_it/get_it.dart';
 
 GetIt locator = GetIt.instance;
 
- setup() async {
-   locator.registerSingleton<ApiProvider>(ApiProvider());
+setup() async {
+  locator.registerSingleton<ApiProvider>(ApiProvider());
 
   final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   locator.registerSingleton<AppDatabase>(database);
@@ -34,8 +34,6 @@ GetIt locator = GetIt.instance;
   locator.registerSingleton<GetAllCityUseCase>(GetAllCityUseCase(locator()));
   locator.registerSingleton<DeleteCityUseCase>(DeleteCityUseCase(locator()));
 
-
-
-  locator.registerSingleton<HomeBloc>(HomeBloc(locator(),locator()));
-  locator.registerSingleton<BookmarkBloc>(BookmarkBloc(locator(),locator(),locator(),locator()));
+  locator.registerSingleton<HomeBloc>(HomeBloc());
+  locator.registerSingleton<BookmarkBloc>(BookmarkBloc());
 }

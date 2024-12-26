@@ -1,32 +1,32 @@
 part of 'bookmark_bloc.dart';
 
-class BookmarkState extends Equatable {
-  final GetCityStatus getCityStatus;
-  final SaveCityStatus saveCityStatus;
-  final GetAllCityStatus getAllCityStatus;
-  final DeleteCityStatus deleteCityStatus;
+enum Status { initial, loading, completed, error }
 
-  const BookmarkState({
-    required this.getCityStatus,
-    required this.saveCityStatus,
-    required this.getAllCityStatus,
-    required this.deleteCityStatus,
+class BookmarkState {
+  final Status status;
+  final List<City> cities;
+  final String? error;
+
+  BookmarkState({
+    required this.status,
+    required this.cities,
+    this.error,
   });
 
-  BookmarkState copyWith(
-      {GetCityStatus? newCityStatus,
-      SaveCityStatus? newSaveStatus,
-      GetAllCityStatus? newGetAllCityStatus,
-      DeleteCityStatus? newDeleteCityStatus,}) {
+  factory BookmarkState.initial() => BookmarkState(
+        status: Status.initial,
+        cities: [],
+      );
+
+  BookmarkState copyWith({
+    Status? newStatus,
+    List<City>? newCities,
+    String? newError,
+  }) {
     return BookmarkState(
-      getCityStatus: newCityStatus ?? getCityStatus,
-      saveCityStatus: newSaveStatus ?? saveCityStatus,
-      getAllCityStatus: newGetAllCityStatus ?? getAllCityStatus,
-      deleteCityStatus: newDeleteCityStatus ?? deleteCityStatus,
+      status: newStatus ?? status,
+      cities: newCities ?? cities,
+      error: newError,
     );
   }
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [getCityStatus, saveCityStatus, getAllCityStatus, deleteCityStatus];
 }

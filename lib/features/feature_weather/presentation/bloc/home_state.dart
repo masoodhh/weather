@@ -5,7 +5,7 @@ class HomeState {
   FwStatus fwStatus;
 
   HomeState({required this.cwStatus, required this.fwStatus});
-
+factory HomeState.initial() => HomeState(cwStatus: CwLoading(), fwStatus: FwLoading());
   HomeState copyWith({CwStatus? newCwStatus, FwStatus? newFwStatus}) {
     return HomeState(
         cwStatus: newCwStatus ?? cwStatus,

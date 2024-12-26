@@ -8,45 +8,44 @@ import 'package:weather/features/feature_weather/presentation/bloc/fw_status.dar
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
+import '../../../../locator.dart';
+
 part 'home_event.dart';
+
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final GetCurrentWeatherUseCase getCurrentWeatherUseCase;
-  final GetForecastWeatherUseCase _getForecastWeatherUseCase;
+  final GetCurrentWeatherUseCase getCurrentWeatherUseCase = locator();
+  final GetForecastWeatherUseCase _getForecastWeatherUseCase = locator();
 
   Logger logger = Logger();
-  HomeBloc(this.getCurrentWeatherUseCase, this._getForecastWeatherUseCase)
-      : super(HomeState(cwStatus: CwLoading(), fwStatus: FwLoading())) {
-    on<LoadCwEvent>((event, emit) async {
-      emit(state.copyWith(newCwStatus: CwLoading()));
-      final DataState dataState = await getCurrentWeatherUseCase(event.cityName);
-      if (dataState is DataSuccess) {
-        logger.w('DataSuccess');
-        emit(state.copyWith(newCwStatus: CwCompleted(dataState.data)));
-      } else if (dataState is DataFailed) {
-        logger.w('DataFailed');
-        emit(state.copyWith(newCwStatus: CwError(dataState.error!)));
-      }
-    });
 
-    /// load 7 days Forecast weather for city Event
-    on<LoadFwEvent>((event, emit) async {
-      /// emit State to Loading for just Fw
-      emit(state.copyWith(newFwStatus: FwLoading()));
+  HomeBloc() : super(HomeState.initial()) {
+    on<LoadCwEvent>((event, emit) => _loadCurrentWeather(event, emit));
+    on<LoadFwEvent>((event, emit) => _loadForecastWeather(event, emit));
+  }
 
-      final DataState dataState =
-          await _getForecastWeatherUseCase(event.forecastParams);
+  Future<void> _loadCurrentWeather(LoadCwEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(newCwStatus: CwLoading()));
 
-      /// emit State to Completed for just Fw
-      if (dataState is DataSuccess) {
-        emit(state.copyWith(newFwStatus: FwCompleted(dataState.data)));
-      }
+    final DataState dataState = await getCurrentWeatherUseCase(event.cityName);
 
-      /// emit State to Error for just Fw
-      if (dataState is DataFailed) {
-        emit(state.copyWith(newFwStatus: FwError(dataState.error)));
-      }
-    });
+    if (dataState is DataSuccess) {
+      emit(state.copyWith(newCwStatus: CwCompleted(dataState.data)));
+    } else if (dataState is DataFailed) {
+      emit(state.copyWith(newCwStatus: CwError(dataState.error!)));
+    }
+  }
+
+  Future<void> _loadForecastWeather(LoadFwEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(newFwStatus: FwLoading()));
+
+    final DataState dataState = await _getForecastWeatherUseCase(event.forecastParams);
+
+    if (dataState is DataSuccess) {
+      emit(state.copyWith(newFwStatus: FwCompleted(dataState.data)));
+    } else if (dataState is DataFailed) {
+      emit(state.copyWith(newFwStatus: FwError(dataState.error)));
+    }
   }
 }

@@ -7,6 +7,7 @@ weather project by clean Architecture and bloc
 
 ## Screenshots
 ![Screenshot 1](./release/screenshots/Screenshot_1.png)
+
 ![Screenshot 2](./release/screenshots/Screenshot_2.png)
 
 ## Getting Started
